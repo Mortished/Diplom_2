@@ -1,7 +1,7 @@
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
-import generator.AuthFormGenerator;
+import generator.AuthClientGenerator;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.Story;
@@ -20,7 +20,7 @@ public class LoginTest {
     @Before
     public void setUp() {
         authClient = new AuthClient();
-        createUserForm = new AuthFormGenerator().getRandomCreateUserForm();
+        createUserForm = new AuthClientGenerator().getRandomCreateUserForm();
         authClient.createUser(createUserForm);
     }
 
@@ -28,7 +28,7 @@ public class LoginTest {
     @DisplayName("Логин с актуальными кредами - 200 ОК")
     @Description("Проверка логина УЗ с актуальными кредами")
     public void loginWithCorrectFields() {
-        ValidatableResponse response = authClient.loginUser(new AuthFormGenerator().getLoginFormBy(createUserForm));
+        ValidatableResponse response = authClient.loginUser(new AuthClientGenerator().getLoginFormBy(createUserForm));
         checkPositiveResponse(response);
     }
 
@@ -37,7 +37,7 @@ public class LoginTest {
     @Description("Проверка логина УЗ с неактуальными кредами")
     public void loginWithIncorrectEmail() {
         ValidatableResponse response = authClient.loginUser(
-            new AuthFormGenerator().getLoginFormWithIncorrect(createUserForm,"email"));
+            new AuthClientGenerator().getLoginFormWithIncorrect(createUserForm,"email"));
         checkResponseWithIncorectFields(response);
     }
 
@@ -46,7 +46,7 @@ public class LoginTest {
     @Description("Проверка логина УЗ с неактуальными кредами")
     public void loginWithIncorrectPassword() {
         ValidatableResponse response = authClient.loginUser(
-            new AuthFormGenerator().getLoginFormWithIncorrect(createUserForm,"password"));
+            new AuthClientGenerator().getLoginFormWithIncorrect(createUserForm,"password"));
         checkResponseWithIncorectFields(response);
     }
 
@@ -55,7 +55,7 @@ public class LoginTest {
     @Description("Проверка логина УЗ с неактуальными кредами")
     public void loginWithIncorrectFields() {
         ValidatableResponse response = authClient.loginUser(
-            new AuthFormGenerator().getLoginFormBy(new AuthFormGenerator().getRandomCreateUserForm()));
+            new AuthClientGenerator().getLoginFormBy(new AuthClientGenerator().getRandomCreateUserForm()));
         checkResponseWithIncorectFields(response);
     }
 

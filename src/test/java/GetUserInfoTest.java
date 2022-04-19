@@ -1,6 +1,6 @@
 import static org.apache.http.HttpStatus.SC_OK;
 
-import generator.AuthFormGenerator;
+import generator.AuthClientGenerator;
 import io.qameta.allure.Step;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
@@ -14,14 +14,14 @@ import pojo.CreateUserForm;
 public class GetUserInfoTest {
 
     private AuthClient authClient;
-    private CreateUserForm createUserForm;
+    private CreateUserForm loginDetails;
     private String token;
 
     @Before
     public void setUp() {
         authClient = new AuthClient();
-        createUserForm = new AuthFormGenerator().getRandomCreateUserForm();
-        ValidatableResponse response = authClient.createUser(createUserForm);
+        loginDetails = new AuthClientGenerator().getRandomCreateUserForm();
+        ValidatableResponse response = authClient.createUser(loginDetails);
         token = response.extract().path("accessToken");
     }
 
@@ -37,8 +37,8 @@ public class GetUserInfoTest {
         boolean success = response.extract().path("success");
         Assert.assertEquals(SC_OK, response.extract().statusCode());
         Assert.assertEquals(Boolean.TRUE, success);
-        Assert.assertEquals(createUserForm.getEmail().toLowerCase(), response.extract().path("user.email"));
-        Assert.assertEquals(createUserForm.getName(), response.extract().path("user.name"));
+        Assert.assertEquals(loginDetails.getEmail().toLowerCase(), response.extract().path("user.email"));
+        Assert.assertEquals(loginDetails.getName(), response.extract().path("user.name"));
     }
 
 }

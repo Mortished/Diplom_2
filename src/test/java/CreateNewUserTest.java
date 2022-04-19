@@ -1,7 +1,7 @@
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_OK;
 
-import generator.AuthFormGenerator;
+import generator.AuthClientGenerator;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.Story;
@@ -25,7 +25,7 @@ public class CreateNewUserTest {
     @DisplayName("Успешное создание УЗ - 200")
     @Description("Проверка успешного создания УЗ. Status = 200 Created")
     public void positiveCreateUser() {
-        CreateUserForm createUserForm = new AuthFormGenerator().getRandomCreateUserForm();
+        CreateUserForm createUserForm = new AuthClientGenerator().getRandomCreateUserForm();
         ValidatableResponse response = authClient.createUser(createUserForm);
         checkPositiveResponse(response, createUserForm);
     }
@@ -34,7 +34,7 @@ public class CreateNewUserTest {
     @DisplayName("Запрос без параметра: Email - 403")
     @Description("Проверка создания УЗ без параметра Email. Status = 403 Forbidden")
     public void createUserWithoutEmail() {
-        ValidatableResponse response = authClient.createUser(new AuthFormGenerator()
+        ValidatableResponse response = authClient.createUser(new AuthClientGenerator()
             .getRandomCreateUserFormWithout("email"));
         checkResponseWithoutField(response);
     }
@@ -43,7 +43,7 @@ public class CreateNewUserTest {
     @DisplayName("Запрос без параметра: Password - 403")
     @Description("Проверка создания УЗ без параметра Password. Status = 403 Forbidden")
     public void createUserWithoutPassword() {
-        ValidatableResponse response = authClient.createUser(new AuthFormGenerator()
+        ValidatableResponse response = authClient.createUser(new AuthClientGenerator()
             .getRandomCreateUserFormWithout("password"));
         checkResponseWithoutField(response);
     }
@@ -52,7 +52,7 @@ public class CreateNewUserTest {
     @DisplayName("Запрос без параметра: Name - 403")
     @Description("Проверка создания УЗ без параметра Name. Status = 403 Forbidden")
     public void createUserWithoutName() {
-        ValidatableResponse response = authClient.createUser(new AuthFormGenerator()
+        ValidatableResponse response = authClient.createUser(new AuthClientGenerator()
             .getRandomCreateUserFormWithout("name"));
         checkResponseWithoutField(response);
     }
@@ -61,7 +61,7 @@ public class CreateNewUserTest {
     @DisplayName("Создание существующего пользователя - 403")
     @Description("Проверка создания УЗ с повторяющимися кредами.")
     public void createUserWithDublicateFields() {
-        CreateUserForm createUserForm = new AuthFormGenerator().getRandomCreateUserForm();
+        CreateUserForm createUserForm = new AuthClientGenerator().getRandomCreateUserForm();
         authClient.createUser(createUserForm);
         ValidatableResponse response = authClient.createUser(createUserForm);
         checkResponseWithDublicateFields(response);

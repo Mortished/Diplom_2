@@ -4,6 +4,7 @@ import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
 import pojo.CreateUserForm;
 import pojo.LoginForm;
+import pojo.PatchForm;
 
 public class AuthClient extends StellarBurgersRestClient {
 
@@ -33,10 +34,20 @@ public class AuthClient extends StellarBurgersRestClient {
     public ValidatableResponse getUserInfo(String token) {
         return given()
             .spec(getBaseSpec())
-            .header("Authorization",
-                "Bearer " + token.substring(7))
+            .header("Authorization", token)
             .when()
-            .get(AUTH_PATH + "/login")
+            .get(AUTH_PATH + "/user")
+            .then();
+    }
+
+    @Step("Send PATCH Request /api/auth/user")
+    public ValidatableResponse patchUserInfo(String token, PatchForm body) {
+        return given()
+            .spec(getBaseSpec())
+            .header("Authorization", token)
+            .body(body)
+            .when()
+            .patch(AUTH_PATH + "/user")
             .then();
     }
 

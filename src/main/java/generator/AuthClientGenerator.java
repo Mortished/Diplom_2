@@ -3,8 +3,9 @@ package generator;
 import org.apache.commons.lang3.RandomStringUtils;
 import pojo.CreateUserForm;
 import pojo.LoginForm;
+import pojo.PatchForm;
 
-public class AuthFormGenerator {
+public class AuthClientGenerator {
     private final String field = RandomStringUtils.randomAlphabetic(10);
 
     public CreateUserForm getRandomCreateUserForm() {
@@ -44,6 +45,10 @@ public class AuthFormGenerator {
             loginForm.setPassword(createUserForm.getPassword() + field);
         }
         return loginForm;
+    }
+
+    public PatchForm getPatchForm(String email, String name) {
+        return new PatchForm(email, name);
     }
 
 }
