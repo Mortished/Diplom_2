@@ -12,4 +12,9 @@ public class PatchForm {
         this.email = email;
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "email: " + email + ", name: " + name;
+    }
 }

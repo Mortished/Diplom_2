@@ -29,4 +29,14 @@ public class OrdersClient extends StellarBurgersRestClient {
             .then();
     }
 
+    @Step("Send GET Request /api/orders")
+    public ValidatableResponse getUserOrders(String token) {
+        return given()
+            .spec(getBaseSpec())
+            .header("Authorization", token)
+            .when()
+            .get(ORDERS_PATH)
+            .then();
+    }
+
 }

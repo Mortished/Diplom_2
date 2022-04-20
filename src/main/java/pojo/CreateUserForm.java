@@ -38,4 +38,9 @@ public class CreateUserForm {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "email: " + email + ", password: " + password + ", name: " + name;
+    }
 }

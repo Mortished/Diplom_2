@@ -1,3 +1,5 @@
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.apache.http.HttpStatus.SC_OK;
 
 import generator.AuthClientGenerator;
@@ -28,7 +30,7 @@ public class CreateOrderTest {
 
     @Test
     @DisplayName("Создание заказа неавторизованным пользователем - 200 ОК")
-    public void createOrderPositive() {
+    public void createOrderWithoutAuth() {
         ValidatableResponse response = ordersClient.createOrder(new CreateOrderForm(INGREDIENTS));
         checkResponse(response);
     }
@@ -40,12 +42,55 @@ public class CreateOrderTest {
         checkResponseWithAuth(response);
     }
 
+    @Test
+    @DisplayName("Создание заказа без ингредиентов - 400 Bad Request")
+    public void createOrderWithoutIngredients() {
+        ValidatableResponse response = ordersClient.createOrder(new CreateOrderForm(null));
+        checkResponseWithoutIngredients(response);
+    }
+
+    @Test
+    @DisplayName("Создание заказа c невалидным хешем ингредиента - 500 Internal Server Error")
+    public void createOrderWithBadIngredients() {
+        ValidatableResponse response = ordersClient.createOrder(new CreateOrderForm(new String[]{"123"}));
+        checkResponseBadIngredients(response);
+    }
+
+    @Step("Проверка ответа метода")
+    private void checkResponseBadIngredients(ValidatableResponse response) {
+        Assert.assertEquals(SC_INTERNAL_SERVER_ERROR, response.extract().statusCode());
+    }
+
+    @Step("Проверка ответа метода")
+    private void checkResponseWithoutIngredients(ValidatableResponse response) {
+        String expectedMessage = "Ingredient ids must be provided";
+        boolean success = response.extract().path("success");
+        Assert.assertEquals(SC_BAD_REQUEST, response.extract().statusCode());
+        Assert.assertEquals(Boolean.FALSE, success);
+        Assert.assertEquals(expectedMessage, response.extract().path("message"));
+    }
+
     @Step("Проверка ответа метода")
     private void checkResponseWithAuth(ValidatableResponse response) {
         boolean success = response.extract().path("success");
+        ValidatableResponse getUserInfo = new AuthClient().getUserInfo(token);
+        String ownerName = getUserInfo.extract().path("user.name");
+        String ownerEmail = getUserInfo.extract().path("user.email");
+
         Assert.assertEquals(SC_OK, response.extract().statusCode());
         Assert.assertEquals(Boolean.TRUE, success);
         Assert.assertEquals(BURGER_NAME, response.extract().path("name"));
+        Assert.assertNotNull(response.extract().path("order.number"));
+        Assert.assertEquals(ownerName, response.extract().path("order.owner.name"));
+        Assert.assertEquals(ownerEmail, response.extract().path("order.owner.email"));
+        Assert.assertNotNull(response.extract().path("order.owner.createdAt"));
+        Assert.assertNotNull(response.extract().path("order.owner.updatedAt"));
+        Assert.assertNotNull(response.extract().path("order.status"));
+        Assert.assertEquals(BURGER_NAME, response.extract().path("order.name"));
+        Assert.assertNotNull(response.extract().path("order.createdAt"));
+        Assert.assertNotNull(response.extract().path("order.createdAt"));
+        Assert.assertNotNull(response.extract().path("order.number"));
+        Assert.assertNotNull(response.extract().path("order.price"));
     }
 
     @Step("Проверка ответа метода")

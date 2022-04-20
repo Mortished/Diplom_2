@@ -20,7 +20,6 @@ public class PatchUserInfoTest {
     private String token;
     private final String email = RandomStringUtils.randomAlphabetic(10) + "@mail.com";
     private final String NAME = "NewTestName";
-    private final String EMAIL_FAIL = "Test@yandex.ru";
 
     @Before
     public void setUp() {
@@ -46,7 +45,8 @@ public class PatchUserInfoTest {
     @Test
     @DisplayName("Изменение информации с почтой, которая уже используется - 403 ОК")
     public void patchInfoByUserWithRepeatEmail() {
-        PatchForm body = new PatchForm(EMAIL_FAIL, NAME);
+        String emailFail = "Test@yandex.ru";
+        PatchForm body = new PatchForm(emailFail, NAME);
         ValidatableResponse response = authClient.patchUserInfo(token, body);
         checkResponseWithDublicate(response);
     }
