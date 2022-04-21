@@ -7,6 +7,7 @@ import io.qameta.allure.Step;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,10 +16,18 @@ import pojo.CreateUserForm;
 @Story("POST /api/auth/register - Создание пользователя")
 public class CreateNewUserTest {
     private AuthClient authClient;
+    private String token;
 
     @Before
     public void setUp() {
         authClient = new AuthClient();
+    }
+
+    @After
+    public void cleanUp() {
+        if (token != null) {
+            authClient.deleteUser(token);
+        }
     }
 
     @Test
@@ -79,11 +88,12 @@ public class CreateNewUserTest {
     @Step("Проверка ответа метода")
     private void checkPositiveResponse(ValidatableResponse response, CreateUserForm createUserForm) {
         Boolean success = response.extract().path("success");
+        token = response.extract().path("accessToken");
         Assert.assertEquals(SC_OK, response.extract().statusCode());
         Assert.assertEquals(Boolean.TRUE, success);
         Assert.assertEquals(createUserForm.getEmail().toLowerCase(), response.extract().path("user.email"));
         Assert.assertEquals(createUserForm.getName(), response.extract().path("user.name"));
-        Assert.assertNotNull(response.extract().path("accessToken"));
+        Assert.assertNotNull(token);
         Assert.assertNotNull(response.extract().path("refreshToken"));
     }
 

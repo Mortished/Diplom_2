@@ -8,6 +8,7 @@ import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +27,13 @@ public class PatchUserInfoTest {
         authClient = new AuthClient();
         ValidatableResponse response = authClient.createUser(new AuthClientGenerator().getRandomCreateUserForm());
         token = response.extract().path("accessToken");
+    }
+
+    @After
+    public void cleanUp() {
+        if (token != null) {
+            authClient.deleteUser(token);
+        }
     }
 
     @Test

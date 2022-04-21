@@ -5,6 +5,7 @@ import io.qameta.allure.Step;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,13 @@ public class GetUserInfoTest {
         loginDetails = new AuthClientGenerator().getRandomCreateUserForm();
         ValidatableResponse response = authClient.createUser(loginDetails);
         token = response.extract().path("accessToken");
+    }
+
+    @After
+    public void cleanUp() {
+        if (token != null) {
+            authClient.deleteUser(token);
+        }
     }
 
     @Test

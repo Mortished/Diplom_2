@@ -6,6 +6,7 @@ import io.qameta.allure.Step;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,13 @@ public class GetUserOrdersTest {
         expectedCreatedAt = response.extract().path("order.createdAt");
         expectedUpdatedAt = response.extract().path("order.updatedAt");
         expectedNumber = response.extract().path("order.number").toString();
+    }
+
+    @After
+    public void cleanUp() {
+        if (token != null) {
+            new AuthClient().deleteUser(token);
+        }
     }
 
     @Test

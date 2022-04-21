@@ -7,6 +7,7 @@ import io.qameta.allure.Step;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,12 +17,20 @@ import pojo.CreateUserForm;
 public class LoginTest {
     private AuthClient authClient;
     private CreateUserForm createUserForm;
+    private String token;
 
     @Before
     public void setUp() {
         authClient = new AuthClient();
         createUserForm = new AuthClientGenerator().getRandomCreateUserForm();
         authClient.createUser(createUserForm);
+    }
+
+    @After
+    public void cleanUp() {
+        if (token != null) {
+            authClient.deleteUser(token);
+        }
     }
 
     @Test
@@ -71,9 +80,10 @@ public class LoginTest {
     @Step("Проверка ответа метода")
     private void checkPositiveResponse(ValidatableResponse response) {
         boolean success = response.extract().path("success");
+        token = response.extract().path("accessToken");
         Assert.assertEquals(SC_OK, response.extract().statusCode());
         Assert.assertEquals(Boolean.TRUE, success);
-        Assert.assertNotNull(response.extract().path("accessToken"));
+        Assert.assertNotNull(token);
         Assert.assertNotNull(response.extract().path("refreshToken"));
         Assert.assertEquals(createUserForm.getEmail().toLowerCase(), response.extract().path("user.email"));
         Assert.assertEquals(createUserForm.getName(), response.extract().path("user.name"));

@@ -51,4 +51,14 @@ public class AuthClient extends StellarBurgersRestClient {
             .then();
     }
 
+    @Step("Send DELETE Request /api/auth/user")
+    public ValidatableResponse deleteUser(String token) {
+        return given()
+            .spec(getBaseSpec())
+            .header("Authorization", token)
+            .when()
+            .delete(AUTH_PATH + "/user")
+            .then();
+    }
+
 }
